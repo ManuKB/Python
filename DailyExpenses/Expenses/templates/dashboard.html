@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-section">
+    <h1> Expense chart of the year - {% now "Y" %}</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script>
+        showChart = function(xValues, yValues){
+            color = ["Blue ", "Green", "Red", "Orange", "Violet", "Indigo", "Yellow", "Red", "pink", "Green", "Orange", "Indigo"];
+            new Chart("myChart", {
+              type: "bar",
+              data: {
+                labels: xValues,
+                datasets: [{
+                  backgroundColor: color,
+                  data: yValues
+                }]
+              },
+              options: {
+                legend: {display: false},
+              }
+            });
+            }
+
+        formatDataToChart = function(data){
+             var xValues = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+             var yValues = [0,0,0,0,0,0,0,0,0,0,0,0];
+             for (let month of data) {
+                yValues[parseInt(month[0])-1] = month[1];
+            }
+            showChart(xValues, yValues);
+        }
+
+        $.ajax('/api',
+            {
+                success: function (data, status, xhr) {
+                    formatDataToChart(data);
+            }
+        });
+
+
+    </script>
+    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+    <div class="form-group double-Form-Button">
+        <a class="btn btn-primary" href="{% url 'home' %}">Go to Home</a>
+    </div>
+    {% if user.is_authenticated %}
+<div id="create">
+	<a href="{% url 'create' %}" class="nav_link"> <i class="bx bx-layer-plus nav_icon"></i></a>
+</div>
+{% endif %}
+</div>
+{% endblock content %}

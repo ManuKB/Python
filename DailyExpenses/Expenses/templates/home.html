@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+<!--{% load crispy_forms_tags %}-->
+{% block content %}
+ {% if user.is_authenticated %}
+        <form method="get" action="{% url 'home' %}">
+        <center>From:<input type="date" name="filter_from" value={{filter_from}} class="dateinput form-control" required="" id="id_filter_from">
+        To:<input type="date" name="filter_to" value={{filter_to}} class="dateinput form-control" required="" id="id_filter_to"></center>
+        <div class="form-group double-Form-Button">
+                {% if filter != ""  %} <a class="btn btn-secondary" href="{% url 'home' %}">Go back</a>{% endif %}
+                <button class="btn btn-danger" type="submit">Filter by Date</button>
+<!--            {% csrf_token %}-->
+<!--            {{ u_form|crispy }}-->
+        </div>
+        </form>
+    {% if total != None and total.amount__sum != None %}
+         <h1 class="text-end">Total : {{ total.amount__sum }}</h1>
+    {% else %}
+       <center> <h1 class="no_expense">No Expenses added for <b>{% if filter != None %} {{ filter }} {% else %}</b> "{% now "F Y" %}"</b> Month{% endif %}</h1></center>
+    {% endif %}
+    {% for expense in expenses %}
+      <div class="jumbotron mt-3 bg-white shadow-lg">
+      <article class="media content-section shadow">
+
+        <div class="media-body">
+             <div class="article-metadata d-flex justify-content-between">
+            <a href="{{ expense.added_by.profile.image.url }} " target="_blank"> <img src="{{ expense.added_by.profile.image.url }}  " alt="" class="article-img rounded-circle img-thumbnail img-fluid shadow">
+            </a>
+              <small class="text-muted"><b>{{ expense.added_by}} |</b> {{ expense.date|date:"F d, Y" }}</small>
+                <a class="article-title text-justify " href="{% url 'delete' expense.id %}"><i class="bx bx-trash"></i></a>
+          </div>
+          <h2 class="float-end"><a class="article-title text-justify " href="{% url 'update' expense.id %}">₹ {{ expense.amount }} /-</a></h2>
+          <div class="d-flex justify-content-between">
+            <p class="article-content text-justify text-truncate overflow-hidden">{{ expense.name }}</p>
+            <a class="" href="{% url 'delete' expense.id %}"><i class="fas fa-trash" ></i></a>
+          </div>
+        </div>
+      </article>
+      </div>
+    {% endfor %}
+    {% if is_paginated %}
+
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+
+    {% endif %}
+{% else %}
+   <h2>You're not logged in</h2>
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            <a href="{% url 'login' %}">Log In here..</a>
+        </small>
+    </div>
+
+{% endif %}
+{% if user.is_authenticated %}
+<div id="create">
+	<a href="{% url 'create' %}" class="nav_link"> <i class="bx bx-layer-plus nav_icon"></i></a>
+</div>
+{% endif %}
+{% endblock content %}

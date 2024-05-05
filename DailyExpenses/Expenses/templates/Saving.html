@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-3">
+  <h1>Saving Calculator</h1>
+ <form>
+  <div class="mb-3">
+    <label for="TotalIncome" class="form-label">Total Income :</label>
+    <input type="number" class="form-control" id="totalIncome">
+  </div>
+  <div class="mb-3">
+    <label for="CitiCredBill" class="form-label">Credit Card Bill :</label>
+    <input type="number" class="form-control" id="citiCredBill">
+  </div>
+  <div class="mb-3">
+    <label for="CarLoan" class="form-label">Car Loan :</label>
+    <input type="number" class="form-control" id="carLoan" value="28083" disabled>
+  </div>
+  <div class="mb-3">
+    <label for="PersonalLoan" class="form-label">Personal Loan :</label>
+    <input type="number" class="form-control" id="personalLoan" value="16310" disabled>
+  </div>
+  <div class="mb-3">
+    <label for="Home&CarRent" class="form-label">Home & Car Rent :</label>
+    <input type="number" class="form-control" id="rent" value="23500" disabled>
+  </div>
+  <div class="mb-3">
+    <label for="Cheeti" class="form-label">Cheeti :</label>
+    <input type="number" class="form-control" id="cheeti" value="70000" disabled>
+  </div>
+  <div class="mb-3">
+    <label for="HomeExpense" class="form-label">Home Expense :</label>
+    <input type="number" class="form-control" id="homeExpense" value="10000">
+  </div>
+  <div class="mb-3">
+    <label for="Other" class="form-label">Other :</label>
+    <input type="number" class="form-control" id="other" value="0">
+  </div>
+  <div class="mb-3 badge bg-success saving" hidden>
+      <h2></h2>
+  </div>
+  <div class="mb-3">
+  <button type="button" class="btn btn-primary" onclick="showSavings()">Submit</button>
+  </div>
+</form>
+</div>
+<script>
+var savings={"totalExpense":0, "totalSavings":0};
+function showSavings(){
+    /*Create JSON from form*/
+    $("button").hide();
+    $("form input[type='number']").each(function(i, ele){
+        savings[ele.id] = ele.value == ""?0:parseInt(ele.value);
+    })
+    /*Calculate total expense savings JSON*/
+    for (var key in savings) {
+        if (savings.hasOwnProperty(key) && key != "totalIncome") {
+        savings.totalExpense = savings.totalExpense + savings[key];
+        }
+    }
+    /*Calculate total Savings savings JSON*/
+    savings.totalSavings = savings.totalIncome - savings.totalExpense;
+    $(".saving h2").text(savings.totalSavings);
+    $(".saving").removeAttr("hidden");
+}
+</script>
+{% endblock content %}
